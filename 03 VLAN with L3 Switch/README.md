@@ -10,20 +10,18 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
   - Layer 3 Switch: Cisco 3700
   - Layer 2 Switch: Cisco 2960
   - PCs: PC1, PC2, PC3
-  - Server: DNS/DHCP Server
 - **Connections**:
   - PC1, PC2, and PC3 are connected to the Cisco 2960 switch.
   - The Cisco 2960 switch is connected to the Cisco 3700 switch via a trunk link.
-  - A DNS/DHCP server is connected to the Cisco 3700 switch.
 
 ---
 
 ## Objectives
 
 1. **Configure VLANs**: Create four VLANs:
-   - VLAN 10: **PC3**
+   - VLAN 10: **PC1**
    - VLAN 20: **PC2**
-   - VLAN 30: **PC1**
+   - VLAN 30: **PC3**
    - VLAN 100: Reserved for management.
 2. **Set Access Ports**: Configure each PC to be part of its respective VLAN.
 3. **Establish Trunk Link**: Connect the Cisco 2960 switch to the Cisco 3700 switch using a trunk link.
@@ -36,10 +34,7 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
      - VLAN 30: `192.168.30.1/24`
      - VLAN 100: `192.168.100.1/24`
 5. **Configure SSH**: Enable SSH on both switches for secure management.
-6. **Integrate DNS/DHCP Server**:
-   - Configure DHCP to provide IP addresses to the PCs.
-   - Configure the DNS server with appropriate records.
-7. **Ensure Connectivity**: All PCs should be able to ping each other.
+6. **Ensure Connectivity**: All PCs should be able to ping each other.
 
 ---
 
@@ -64,15 +59,17 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
    ```bash
    interface FastEthernet0/1
    switchport mode access
-   switchport access vlan 30
+   switchport access vlan 10
    exit
+
    interface FastEthernet0/2
    switchport mode access
    switchport access vlan 20
    exit
+
    interface FastEthernet0/3
    switchport mode access
-   switchport access vlan 10
+   switchport access vlan 30
    exit
    ```
 
@@ -80,7 +77,6 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
 1. On the Cisco 2960 switch:
    ```bash
    interface GigabitEthernet0/1
-   switchport trunk encapsulation dot1q
    switchport mode trunk
    exit
    ```
@@ -93,21 +89,33 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
    ip address 192.168.10.1 255.255.255.0
    no shutdown
    exit
+
    interface vlan 20
    ip address 192.168.20.1 255.255.255.0
    no shutdown
    exit
+
    interface vlan 30
    ip address 192.168.30.1 255.255.255.0
    no shutdown
    exit
+   
    interface vlan 100
    ip address 192.168.100.1 255.255.255.0
    no shutdown
    exit
    ```
 
-### Step 4: Configure SSH on Both Switches
+### Step 4: Enable IP ROuting
+1. Enable IP routing:
+   ```bash
+    enable
+    configure terminal
+    ip routing
+    exit
+   ```
+
+### Step 5: Configure SSH on Both Switches
 1. Generate RSA keys:
    ```bash
    ip domain-name example.com
@@ -120,18 +128,6 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
    login local
    exit
    ```
-
-### Step 5: Configure DNS/DHCP Server
-1. On the DHCP server:
-   - Assign IP pools for each VLAN.
-   - Set `192.168.100.1` as the default gateway.
-2. On the DNS server:
-   - Add appropriate records for hostname resolution.
-
-### Step 6: Test Connectivity
-- Ping between PCs to ensure communication.
-- Verify DNS resolution from PCs.
-
 ---
 
 ## Tools Used
@@ -140,8 +136,7 @@ This lab demonstrates the setup and configuration of VLANs in a network using Ci
 - **Devices**:
   - Layer 2 Switch: Cisco 2960
   - Layer 3 Switch: Cisco 3700
-  - DNS/DHCP Server
-  - PCs
+  - 3 PCs
 
 ---
 
